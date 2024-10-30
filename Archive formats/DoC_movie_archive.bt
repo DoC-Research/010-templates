@@ -1,0 +1,42 @@
+//----------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: DoC_movie_archive.bt
+//   Authors: Surihix
+//   Version: 1.0
+//   Purpose: Parse Dirge Of Cerberus movie archives
+//  Category: 
+// File Mask: *.*
+//  ID Bytes: 
+//   History: 
+//   1.0   2023-11-23 Surihix: Initial version
+//----------------------------------------------------
+
+LittleEndian();
+
+typedef struct MOVIEINFO
+{
+    local uint32 currentPos = FTell();
+
+    uint id<name="ID???">;
+    uint startPos<name="Start Offset (multiply with 2048)">;
+    uint movieSize<name="Size">;
+    char padding[12];
+    ushort multiplyKey<name="Multiply Key (used along with initial key values)">;
+    ushort key1<name="Key1">;
+    ushort key2<name="Key2">;
+    ushort key3<name="Key3">;
+    
+    FSeek(startPos * 2048);
+    char movieData[movieSize];
+
+    FSeek(currentPos + 32);      
+}MovieInfo<name="Movie Info">;
+
+
+struct FILE
+{    
+    uint movieCount<name="Movie Count">;
+    MovieInfo movieInfo[movieCount]<optimize=false>;
+
+}File<open=true, name="DoCMovieArchive">;
