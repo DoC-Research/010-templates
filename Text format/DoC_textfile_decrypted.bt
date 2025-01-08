@@ -1,74 +1,74 @@
-//------------------------------------------------
+//------------------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
 //      File: DoC_textfile_decrypted.bt
 //   Authors: Surihix
-//   Version: 1.0
-//   Purpose: Parse Dirge Of Cerberus text files
+//   Version: 1.1
+//   Purpose: Parse Dirge Of Cerberus's decrypted text files
 //  Category: Dirge Cerberus text files
 // File Mask: *.bin
 //  ID Bytes: 01 00 00 00 00 00 00 00
 //   History: 
 //   1.0   2023-11-21 Surihix: Initial version
-//------------------------------------------------
+//   1.1   2025-01-08 Surihix: Updated offsets
+//------------------------------------------------------------
 
 LittleEndian();
 
-
 typedef struct HEADER
 {
-    uint seedValueA<name="Seed Value A">;
-    uint seedValueB<name="Seed Value B">;
-    ushort lineCount<name="Line Count">;
-    ubyte reserved<name="Reserved (always 0)">;
-    ubyte cmpFlag<name="Compression Flag (1 = compressed and 0 = decompressed)">;
-    uint dcryptdTxtSniptSize<name="Decrypted Text Snippet size">;
-    uint dcmpBodySection<name="Decompressed Body Section size">;
-    uint fileSize<name="File Size">;    
+    uint32 seedValueA<bgcolor=cDkGreen>;
+    uint32 seedValueB<bgcolor=cDkGreen>;
+    uint16 lineCount<bgcolor=cDkGreen>;
+    ubyte reserved<bgcolor=cBlack>;
+    ubyte cmpFlag<bgcolor=cDkGreen, comment="1 = compressed & 0 = decompressed">;
+    uint32 decTxtSnippetSize<bgcolor=cDkGreen, comment="size of the decrypted text snippet at the end of the file">;
+    uint32 dcmpBodySectionSize<bgcolor=cDkGreen>;
+    uint32 fileSize<bgcolor=cDkGreen>;    
 }Header;
 
 
 typedef struct HEADERFOOTER
 {
-    uint headerSize<name="Header Section size (always 24)">;
-    uint headerChecksumValue<name="Header Checksum", comment="Sum of all 4th byte values from the 0th byte">;
+    uint headerSize<bgcolor=cDkGreen, comment="always 24">;
+    uint headerChecksumValue<bgcolor=cDkGreen, comment="sum of all 4th byte values from the 0th byte">;
 }HeaderFooter;
 
 
 typedef struct BODYFOOTER
 {
-    uint bodySize<name="Body Section size">;
-    uint bodyChecksumValue<name="Body Checksum", comment="Sum of all 4th byte values from the body's 0th byte">;
+    uint bodySize<bgcolor=0xbf6b6c>;
+    uint bodyChecksumValue<bgcolor=0xbf6b6c, comment="sum of all 4th byte values from the body's 0th byte">;
 }BodyFooter;
 
 
 struct FILE
 {
-    uint64 magic<hidden=true>;   
-    Assert(magic == 10733845617377775685 || magic == 1);
+    uint64 encMagic<hidden=true>;   
+    Assert(encMagic == 10733845617377775685 || encMagic == 1);
 
-    if(magic == 10733845617377775685)
+    if(encMagic == 10733845617377775685)
     {
        Printf("Warning: File is encrypted.\nThe template won't show any results");
     }
 
-    if(magic == 1) 
+    if(encMagic == 1) 
     {
        FSeek(0);
-       Header headerOffsets<name="Header Section">;
+       Header headerOffsets<name="Header Section", open=true>;
        HeaderFooter headerFooterOffsets<name="Header Footer Section">;
        
        local uint64 fileSize = FileSize();
-       local uint64 dcryptdTxtSnipOffset = fileSize - headerOffsets.dcryptdTxtSniptSize;
-       local uint64 bodySize = (dcryptdTxtSnipOffset - 32) - 8;
+       local uint64 decTxtSnippetOffset = fileSize - headerOffsets.decTxtSnippetSize;
+       local uint64 bodySize = (decTxtSnippetOffset - 32) - 8;
        
        FSeek(32);
-       char bodyData[bodySize]<name="Body Section">;
+       ubyte bodyData[bodySize]<bgcolor=0xbf6b6c>;
 
-       FSeek(dcryptdTxtSnipOffset - 8);
+       FSeek(decTxtSnippetOffset - 8);
        BodyFooter bodyFooterOffsets<name="Body Footer Section">;
 
-       FSeek(dcryptdTxtSnipOffset);
-       char dcryptdTxtSnip[headerOffsets.dcryptdTxtSniptSize]<name="Decrypted Text Snippet">;              
+       FSeek(decTxtSnippetOffset);
+       char decTxtSnippet[headerOffsets.decTxtSnippetSize]<bgcolor=0x41446c, comment="decrypted Text Snippet">;              
     }
 }File<open=true, name="DoCTextFile">;
