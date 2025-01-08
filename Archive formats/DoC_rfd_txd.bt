@@ -32,7 +32,7 @@ typedef struct PACKEDTYPE2
 {
     char fileName[8]<bgcolor=0xbf6b6c>;
     char fileExtension[4]<bgcolor=0xbf6b6c>;
-    uint32 dataSize<bgcolor=cDkYellow, comment="may not always be correct. size includes this offset and the previous 8 bytes">;
+    uint32 dataSize<bgcolor=cDkYellow, comment="may not always be correct. size includes this offset and the previous 12 bytes">;
 }PackedType2;
 
 
@@ -41,7 +41,7 @@ typedef struct PACKEDTYPE1
     char fileName[8]<bgcolor=0xbf6b6c>;
     char fileExtension[4]<bgcolor=0xbf6b6c>;
     uint32 dataSize<bgcolor=cDkYellow, comment="not correct most of the time">;
-    char dataName2[8]<bgcolor=0xbf6b6c>;
+    char fileName2[8]<bgcolor=0xbf6b6c>;
     ubyte reserved[8]<bgcolor=cBlack>;
 }PackedType1;
 
