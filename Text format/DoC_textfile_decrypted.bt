@@ -30,15 +30,15 @@ typedef struct HEADER
 
 typedef struct HEADERFOOTER
 {
-    uint headerSize<bgcolor=cDkGreen, comment="always 24">;
-    uint headerChecksumValue<bgcolor=cDkGreen, comment="sum of all 4th byte values from the 0th byte">;
+    uint32 headerSize<bgcolor=cDkGreen, comment="always 24">;
+    uint32 headerChecksumValue<bgcolor=cDkGreen, comment="sum of all 4th byte values from the 0th byte">;
 }HeaderFooter;
 
 
 typedef struct BODYFOOTER
 {
-    uint bodySize<bgcolor=0xbf6b6c>;
-    uint bodyChecksumValue<bgcolor=0xbf6b6c, comment="sum of all 4th byte values from the body's 0th byte">;
+    uint32 bodySize<bgcolor=0xbf6b6c>;
+    uint32 bodyChecksumValue<bgcolor=0xbf6b6c, comment="sum of all 4th byte values from the body's 0th byte">;
 }BodyFooter;
 
 
