@@ -1,42 +1,41 @@
-//----------------------------------------------------
+//------------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
 //      File: DoC_movie_archive.bt
 //   Authors: Surihix
-//   Version: 1.0
-//   Purpose: Parse Dirge Of Cerberus movie archives
+//   Version: 1.1
+//   Purpose: Parse Dirge Of Cerberus's movie archives
 //  Category: 
-// File Mask: *.*
+// File Mask:
 //  ID Bytes: 
 //   History: 
 //   1.0   2023-11-23 Surihix: Initial version
-//----------------------------------------------------
+//   1.1   2025-01-08 Surihix: Updated offsets
+//------------------------------------------------------
 
 LittleEndian();
 
-typedef struct MOVIEINFO
+typedef struct MOVIEENTRY
 {
+    uint32 hashedName<bgcolor=cDkYellow, comment="hashed name??">;
+    uint32 startPos<bgcolor=cDkGreen, comment="multiply with 2048 to get actual position">;
+    uint32 movieSize<bgcolor=cDkGreen>;
+    ubyte reserved[12]<bgcolor=cBlack>;
+    uint16 multiplicationKey<comment="used during decryption", bgcolor=cDkGreen>;
+    uint16 key1<bgcolor=cDkGreen>;
+    uint16 key2<bgcolor=cDkGreen>;
+    uint16 key3<bgcolor=cDkGreen>;
+
     local uint32 currentPos = FTell();
-
-    uint id<name="ID???">;
-    uint startPos<name="Start Offset (multiply with 2048)">;
-    uint movieSize<name="Size">;
-    char padding[12];
-    ushort multiplyKey<name="Multiply Key (used along with initial key values)">;
-    ushort key1<name="Key1">;
-    ushort key2<name="Key2">;
-    ushort key3<name="Key3">;
-    
     FSeek(startPos * 2048);
-    char movieData[movieSize];
+    ubyte movieData[movieSize]<bgcolor=cDkGreen>;
 
-    FSeek(currentPos + 32);      
-}MovieInfo<name="Movie Info">;
+    FSeek(currentPos);   
+}MovieEntry;
 
 
 struct FILE
 {    
-    uint movieCount<name="Movie Count">;
-    MovieInfo movieInfo[movieCount]<optimize=false>;
-
+    uint32 movieCount<bgcolor=cDkGreen>;
+    MovieEntry movieEntry[movieCount]<name="Movie Entry", optimize=false>;
 }File<open=true, name="DoCMovieArchive">;
